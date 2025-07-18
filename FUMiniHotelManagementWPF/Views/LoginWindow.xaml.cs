@@ -23,7 +23,6 @@ namespace FUMiniHotelManagementWPF.Views
         public LoginWindow()
         {
             InitializeComponent();
-            DataContext = new LoginViewModel(App._authServiceSingleton);
         }
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
