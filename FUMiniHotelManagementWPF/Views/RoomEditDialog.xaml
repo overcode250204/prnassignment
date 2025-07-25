@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FUMiniHotelManagementWPF.Views"
         mc:Ignorable="d"
-        Title="RoomEditDialog" Height="450" Width="800" WindowStartupLocation="CenterOwner">
+        Title="Chỉnh sửa phòng" Height="450" Width="800" WindowStartupLocation="CenterOwner">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>

@@ -1,4 +1,5 @@
 ﻿using DAL.Entities;
+using FUMiniHotelManagementWPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,31 @@ namespace FUMiniHotelManagementWPF.Views
     /// </summary>
     public partial class CustomerWindow : Window
     {
+        private Customer _customer;
         public CustomerWindow(Customer customer)
         {
             InitializeComponent();
-            WelcomeText.Text = "Hello " + customer.CustomerFullName;
+            _customer = customer;
+            WelcomeText.Text = $"Welcome, {customer.CustomerFullName}!";
+        }
+
+        private void Account_Click(object sender, RoutedEventArgs e)
+        {
+            AccountWindow aw = new AccountWindow(_customer);
+            aw.ShowDialog();
+        }
+
+        private void History_Click(object sender, RoutedEventArgs e)
+        {
+            HistoryWindow hw = new HistoryWindow(_customer);
+            hw.ShowDialog();
+        }
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            var loginWindow = new LoginWindow();
+            loginWindow.DataContext = new LoginViewModel(App._authServiceSingleton);
+            loginWindow.Show();
+            this.Close();
         }
     }
 }

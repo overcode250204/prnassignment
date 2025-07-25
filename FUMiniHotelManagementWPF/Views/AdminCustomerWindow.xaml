@@ -33,7 +33,7 @@
             <Button Content="Thêm" Command="{Binding AddCommand}" Width="80" Margin="5"/>
             <Button Content="Sửa" Command="{Binding EditCommand}" Width="80" Margin="5"/>
             <Button Content="Xóa" Command="{Binding DeleteCommand}" Width="80" Margin="5"/>
-            <Button Content="Làm mới" Command="{Binding RefreshCommand}" Width="80" Margin="5"/>
+     
         </StackPanel>
     </Grid>
 </Window>

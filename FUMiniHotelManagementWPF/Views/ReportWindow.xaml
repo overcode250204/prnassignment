@@ -1,0 +1,32 @@
+﻿<Window x:Class="FUMiniHotelManagementWPF.Views.ReportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FUMiniHotelManagementWPF.Views"
+        mc:Ignorable="d"
+        Title="Báo cáo" Height="450" Width="800">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Từ ngày:" VerticalAlignment="Center"/>
+            <DatePicker x:Name="FromDatePicker" Width="120" Margin="5,0"/>
+            <Label Content="Đến ngày:" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <DatePicker x:Name="ToDatePicker" Width="120" Margin="5,0"/>
+        </StackPanel>
+        <Button Content="Thống kê" Grid.Row="1" Width="100" Height="30" HorizontalAlignment="Left" Click="StatisticButton_Click"/>
+        <TextBlock x:Name="ResultTextBlock" Grid.Row="2" Margin="0,20,0,0" TextWrapping="Wrap"/>
+        <DataGrid x:Name="RoomStatisticsGrid" Grid.Row="3" Margin="0,10,0,0" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Phòng" Binding="{Binding RoomNumber}" Width="*"/>
+                <DataGridTextColumn Header="Số lần đặt" Binding="{Binding Count}" Width="*"/>
+                <DataGridTextColumn Header="Doanh thu" Binding="{Binding Revenue, StringFormat=N0}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

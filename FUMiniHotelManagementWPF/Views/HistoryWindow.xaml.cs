@@ -1,4 +1,5 @@
-﻿using FUMiniHotelManagementWPF.ViewModels;
+﻿using DAL.Entities;
+using FUMiniHotelManagementWPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,14 @@ using System.Windows.Shapes;
 namespace FUMiniHotelManagementWPF.Views
 {
     /// <summary>
-    /// Interaction logic for AdminBookingManagement.xaml
+    /// Interaction logic for HistoryWindow.xaml
     /// </summary>
-    public partial class AdminBookingManagement : Window
+    public partial class HistoryWindow : Window
     {
-        public AdminBookingManagement()
+        public HistoryWindow(Customer customer)
         {
             InitializeComponent();
-            DataContext = new AdminBookingViewModel(App._manageBookingServiceSingleton, App._manageBookingDetailServiceSingleton, App._manageCustomerServiceSingleton, App._manageRoomServiceSingleton);
+            DataContext = new HistoryViewModel(customer);
         }
     }
 }

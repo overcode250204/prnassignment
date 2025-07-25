@@ -26,9 +26,15 @@ namespace BLL.Services
             return _detailRepo.GetAll().Where(d => d.BookingReservationId == reservationId).ToList();
         }
 
+        public List<BookingDetail> GetByRoomId(int roomId)
+        {
+            return _detailRepo.GetAll().Where(d => d.RoomId == roomId).ToList();
+        }
+
         public void Add(BookingDetail detail)
         {
             _detailRepo.Add(detail);
+
         }
 
         public void Update(BookingDetail detail)

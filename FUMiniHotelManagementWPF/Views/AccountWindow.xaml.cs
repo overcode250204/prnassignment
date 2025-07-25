@@ -1,4 +1,5 @@
-﻿using FUMiniHotelManagementWPF.ViewModels;
+﻿using DAL.Entities;
+using FUMiniHotelManagementWPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,16 @@ using System.Windows.Shapes;
 namespace FUMiniHotelManagementWPF.Views
 {
     /// <summary>
-    /// Interaction logic for AdminBookingManagement.xaml
+    /// Interaction logic for AccountWindow.xaml
     /// </summary>
-    public partial class AdminBookingManagement : Window
+    public partial class AccountWindow : Window
     {
-        public AdminBookingManagement()
+        public AccountWindow(Customer customer)
         {
             InitializeComponent();
-            DataContext = new AdminBookingViewModel(App._manageBookingServiceSingleton, App._manageBookingDetailServiceSingleton, App._manageCustomerServiceSingleton, App._manageRoomServiceSingleton);
+            var vm = new CustomerProfileEditDialogViewModel(customer);
+            DataContext = vm;
+            vm.RequestClose += result => { if (result) this.DialogResult = true; };
         }
     }
 }

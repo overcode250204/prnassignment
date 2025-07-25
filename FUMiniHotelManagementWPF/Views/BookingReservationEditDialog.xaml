@@ -12,23 +12,30 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel>
-            <Label Content="Khách hàng (ID):"/>
-            <TextBox Text="{Binding CustomerId, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Content="Khách hàng:"/>
+            <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding CustomerFullName}"/>
+                            <TextBlock Text=" - "/>
+                            <TextBlock Text="{Binding Telephone}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
 
             <Label Content="Ngày đặt:"/>
-            <DatePicker SelectedDate="{Binding BookingDate, Mode=TwoWay}"/>
+            <TextBox Text="{Binding BookingDate, StringFormat=dd/MM/yyyy}" IsReadOnly="True"/>
 
             <Label Content="Tổng tiền:"/>
             <TextBox Text="{Binding TotalPrice, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Label Content="Trạng thái:"/>
             <ComboBox SelectedValue="{Binding BookingStatus, Mode=TwoWay}" SelectedValuePath="Tag">
-                <ComboBoxItem Content="Đang xử lý" Tag="0"/>
                 <ComboBoxItem Content="Đã xác nhận" Tag="1"/>
-                <ComboBoxItem Content="Đã hủy" Tag="2"/>
+                <ComboBoxItem Content="Đã hủy" Tag="0"/>
             </ComboBox>
-
-
 
             <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,10,0,0"/>
         </StackPanel>

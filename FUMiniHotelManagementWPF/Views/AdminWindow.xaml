@@ -12,6 +12,8 @@
             <Button Content="Quản lý khách hàng" Width="200" Height="40" Margin="0,30,0,0" Click="ManageCustomer_Click"/>
             <Button Content="Quản lý phòng" Width="200" Height="40" Margin="0,10,0,0" Click="ManageRoom_Click"/>
             <Button Content="Quản lý đặt phòng" Width="200" Height="40" Margin="0,10,0,0" Click="ManageBooking_Click"/>
+            <Button Content="Thống Kê" Width="200" Height="40" Margin="0,10,0,0" Click="Statistics_Click"/>
+            <Button Content="Đăng xuất" Width="200" Height="40" Margin="0,30,0,0" Click="Logout_Click"/>
         </StackPanel>
     </Grid>
 </Window>

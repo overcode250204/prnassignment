@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace FUMiniHotelManagementWPF.ViewModels
 {
-    public class LoginViewModel
+    public class LoginViewModel : INotifyPropertyChanged
     {
         private readonly AuthService _authService;
 

@@ -11,7 +11,7 @@ namespace DAL.Repositories
     public class BookingDetailRepository
     {
         private readonly FuminiHotelManagementContext _context;
-        public BookingDetailRepository(FuminiHotelManagementContext context) 
+        public BookingDetailRepository(FuminiHotelManagementContext context)
         {
             _context = context;
         }

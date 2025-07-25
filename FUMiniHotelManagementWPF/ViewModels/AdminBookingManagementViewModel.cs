@@ -15,13 +15,14 @@ using System.Windows.Input;
 
 namespace FUMiniHotelManagementWPF.ViewModels
 {
-    public class AdminBookingManagementViewModel : INotifyPropertyChanged
+    public class AdminBookingViewModel : INotifyPropertyChanged
     {
-        private readonly BookingService _manageBookingService;
+        private readonly BookingService _bookingService;
 
-        private readonly BookingDetailService _manageBookingDetailService;
+        private readonly BookingDetailService _bookingDetailService;
 
-        private readonly CustomerService _manageCustomerService;
+        private readonly CustomerService _customerService;
+        private readonly ManageRoomService _manageRoomService;
         public ObservableCollection<BookingReservation> Reservations { get; set; }
         public ObservableCollection<BookingDetail> Details { get; set; }
 
@@ -53,21 +54,20 @@ namespace FUMiniHotelManagementWPF.ViewModels
         public ICommand AddDetailCommand { get; }
         public ICommand EditDetailCommand { get; }
         public ICommand DeleteDetailCommand { get; }
-        public ICommand ReloadCommand { get; }
 
-        public AdminBookingManagementViewModel(BookingService manageBookingService, BookingDetailService manageBookingDetailService, CustomerService manageCustomerService)
+        public AdminBookingViewModel(BookingService BookingService, BookingDetailService BookingDetailService, CustomerService CustomerService, ManageRoomService manageRoomService)
         {
-            _manageCustomerService = manageCustomerService;
-            _manageBookingService = manageBookingService;
-            _manageBookingDetailService = manageBookingDetailService;
-            Reservations = new ObservableCollection<BookingReservation>(_manageBookingService.GetAllReservations());
+            _customerService = CustomerService;
+            _bookingService = BookingService;
+            _bookingDetailService = BookingDetailService;
+            _manageRoomService = manageRoomService;
+            Reservations = new ObservableCollection<BookingReservation>(_bookingService.GetAllReservations());
             AddReservationCommand = new RelayCommand(_ => AddReservation());
             EditReservationCommand = new RelayCommand(_ => EditReservation(), _ => SelectedReservation != null);
             DeleteReservationCommand = new RelayCommand(_ => DeleteReservation(), _ => SelectedReservation != null);
             AddDetailCommand = new RelayCommand(_ => AddDetail(), _ => SelectedReservation != null);
             EditDetailCommand = new RelayCommand(_ => EditDetail(), _ => SelectedDetail != null);
             DeleteDetailCommand = new RelayCommand(_ => DeleteDetail(), _ => SelectedDetail != null);
-            ReloadCommand = new RelayCommand(_ => Reload());
         }
 
         private void AddReservation()
@@ -83,7 +83,7 @@ namespace FUMiniHotelManagementWPF.ViewModels
                     MessageBox.Show(error, "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                int newId = _manageBookingService.GenerateNewBookingReservationId();
+                int newId = _bookingService.GenerateNewBookingReservationId();
                 var newReservation = new BookingReservation
                 {
                     BookingReservationId = newId,
@@ -91,11 +91,12 @@ namespace FUMiniHotelManagementWPF.ViewModels
                     BookingDate = vm.BookingDate.HasValue ? DateOnly.FromDateTime(vm.BookingDate.Value) : (DateOnly?)null,
                     TotalPrice = vm.TotalPrice,
                     BookingStatus = vm.BookingStatus,
-                    BookingDetails = new System.Collections.Generic.List<BookingDetail>()
+                    BookingDetails = new List<BookingDetail>()
                 };
-
-                _manageBookingService.AddReservation(newReservation);
+                _bookingService.AddReservation(newReservation);
                 SelectedReservation = newReservation;
+                Reload();
+                MessageBox.Show("Thêm đơn đặt phòng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -117,8 +118,10 @@ namespace FUMiniHotelManagementWPF.ViewModels
                 SelectedReservation.BookingDate = vm.BookingDate.HasValue ? DateOnly.FromDateTime(vm.BookingDate.Value) : (DateOnly?)null;
                 SelectedReservation.TotalPrice = vm.TotalPrice;
                 SelectedReservation.BookingStatus = vm.BookingStatus;
-                _manageBookingService.UpdateReservation(SelectedReservation);
+                _bookingService.UpdateReservation(SelectedReservation);
                 OnPropertyChanged(nameof(Reservations));
+                Reload();
+                MessageBox.Show("Cập nhật đơn đặt phòng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -128,9 +131,11 @@ namespace FUMiniHotelManagementWPF.ViewModels
             var result = MessageBox.Show("Bạn có chắc muốn xóa đặt phòng này?", "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
-                _manageBookingService.RemoveReservation(SelectedReservation);
+                _bookingService.RemoveReservation(SelectedReservation);
                 Reservations.Remove(SelectedReservation);
                 SelectedReservation = null;
+                Reload();
+                MessageBox.Show("Xóa đơn đặt phòng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -138,7 +143,7 @@ namespace FUMiniHotelManagementWPF.ViewModels
         {
             if (SelectedReservation == null) return;
             var dialog = new BookingDetailEditDialog();
-            var vm = new BookingDetailEditDialogViewModel();
+            var vm = new BookingDetailEditDialogViewModel(null, SelectedReservation.BookingDate?.ToDateTime(TimeOnly.MinValue));
             dialog.DataContext = vm;
             vm.RequestClose += result => dialog.DialogResult = result;
             if (dialog.ShowDialog() == true)
@@ -161,8 +166,10 @@ namespace FUMiniHotelManagementWPF.ViewModels
                     StartDate = vm.StartDate.HasValue ? DateOnly.FromDateTime(vm.StartDate.Value) : default,
                     EndDate = vm.EndDate.HasValue ? DateOnly.FromDateTime(vm.EndDate.Value) : default
                 };
-                _manageBookingDetailService.Add(newDetail);
+                _bookingService.AddDetail(newDetail);
                 OnPropertyChanged(nameof(Details));
+                Reload();
+                MessageBox.Show("Thêm chi tiết đặt phòng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -184,8 +191,10 @@ namespace FUMiniHotelManagementWPF.ViewModels
                 SelectedDetail.ActualPrice = vm.ActualPrice;
                 SelectedDetail.StartDate = vm.StartDate.HasValue ? DateOnly.FromDateTime(vm.StartDate.Value) : default;
                 SelectedDetail.EndDate = vm.EndDate.HasValue ? DateOnly.FromDateTime(vm.EndDate.Value) : default;
-                _manageBookingService.UpdateDetail(SelectedDetail);
+                _bookingService.UpdateDetail(SelectedDetail);
                 OnPropertyChanged(nameof(Details));
+                Reload();
+                MessageBox.Show("Cập nhật chi tiết đặt phòng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -195,17 +204,19 @@ namespace FUMiniHotelManagementWPF.ViewModels
             var result = MessageBox.Show("Bạn có chắc muốn xóa chi tiết này?", "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
-                _manageBookingService.RemoveDetail(SelectedDetail);
+                _bookingService.RemoveDetail(SelectedDetail);
                 SelectedReservation.BookingDetails.Remove(SelectedDetail);
                 Details.Remove(SelectedDetail);
                 OnPropertyChanged(nameof(Details));
+                Reload();
+                MessageBox.Show("Xóa chi tiết đặt phòng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         private void Reload()
         {
             Reservations.Clear();
-            foreach (var r in _manageBookingService.GetAllReservations())
+            foreach (var r in _bookingService.GetAllReservations())
                 Reservations.Add(r);
             if (SelectedReservation != null)
             {
@@ -217,7 +228,7 @@ namespace FUMiniHotelManagementWPF.ViewModels
         private bool ValidateReservation(BookingReservationEditDialogViewModel vm, out string error)
         {
             error = string.Empty;
-            if (!_manageCustomerService.CheckCustomerExist(vm.CustomerId))
+            if (!_customerService.CheckCustomerExist(vm.CustomerId))
             {
                 error = "Khách hàng không tồn tại";
             }
@@ -243,6 +254,47 @@ namespace FUMiniHotelManagementWPF.ViewModels
                 error = "Ngày bắt đầu không hợp lệ.";
             else if (vm.EndDate == null)
                 error = "Ngày kết thúc không hợp lệ.";
+            // Kiểm tra ngày chi tiết phải nằm trong khoảng ngày của reservation
+            else if (SelectedReservation != null && SelectedReservation.BookingDate != null)
+            {
+                var bookingDate = SelectedReservation.BookingDate.Value.ToDateTime(TimeOnly.MinValue).Date;
+                var detailStart = vm.StartDate.Value.Date;
+                var detailEnd = vm.EndDate.Value.Date;
+                if (detailStart < bookingDate)
+                {
+                    error = "Ngày bắt đầu của chi tiết phải lớn hơn hoặc bằng ngày đặt phòng!";
+                    return false;
+                }
+                if (detailEnd < bookingDate)
+                {
+                    error = "Ngày kết thúc của chi tiết phải lớn hơn hoặc bằng ngày đặt phòng!";
+                    return false;
+                }
+            }
+
+            else if (SelectedReservation != null && SelectedReservation.BookingDetails.Any(d => d.RoomId == vm.RoomId))
+            {
+                error = "Khách hàng này đã có chi tiết đặt phòng cho phòng này!";
+                return false;
+            }
+            else
+            {
+                var newStart = vm.StartDate.Value.Date;
+                var newEnd = vm.EndDate.Value.Date;
+
+                var allDetails = _bookingDetailService.GetByRoomId(vm.RoomId);
+                foreach (var d in allDetails)
+                {
+                    if (SelectedDetail != null && d == SelectedDetail) continue;
+                    var existStart = d.StartDate.ToDateTime(TimeOnly.MinValue).Date;
+                    var existEnd = d.EndDate.ToDateTime(TimeOnly.MinValue).Date;
+                    if (!(existEnd < newStart))
+                    {
+                        error = "Phòng này đã có chi tiết đặt phòng bị trùng hoặc giao nhau ngày với khách hàng khác!";
+                        return false;
+                    }
+                }
+            }
             return string.IsNullOrEmpty(error);
         }
 

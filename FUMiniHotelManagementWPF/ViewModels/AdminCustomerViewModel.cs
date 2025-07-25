@@ -14,7 +14,7 @@ using System.Windows.Input;
 
 namespace FUMiniHotelManagementWPF.ViewModels
 {
-    public class AdminCustomerViewModel
+    public class AdminCustomerViewModel : INotifyPropertyChanged
     {
         private readonly CustomerService _customerService;
         public ObservableCollection<Customer> Customers { get; set; }
@@ -31,17 +31,15 @@ namespace FUMiniHotelManagementWPF.ViewModels
         public ICommand SearchCommand { get; }
         public string SearchKeyword { get; set; }
         public ICommand DeleteCommand { get; }
-        public ICommand RefreshCommand { get; }
 
-        public AdminCustomerViewModel(CustomerService customerService)
+        public AdminCustomerViewModel(CustomerService CustomerService)
         {
-            _customerService = customerService;
+            _customerService = CustomerService;
             Customers = new ObservableCollection<Customer>(_customerService.GetAll());
             AddCommand = new RelayCommand(_ => AddCustomer());
             EditCommand = new RelayCommand(_ => EditCustomer(), _ => SelectedCustomer != null);
             SearchCommand = new RelayCommand(_ => Search());
             DeleteCommand = new RelayCommand(_ => DeleteCustomer(), _ => SelectedCustomer != null);
-            RefreshCommand = new RelayCommand(_ => Refresh());
         }
 
         private void AddCustomer()
@@ -52,7 +50,7 @@ namespace FUMiniHotelManagementWPF.ViewModels
             vm.RequestClose += result => { if (result) dialog.DialogResult = true; else dialog.DialogResult = false; };
             if (dialog.ShowDialog() == true)
             {
-                var newCustomer = new DAL.Entities.Customer
+                var newCustomer = new Customer
                 {
                     CustomerFullName = vm.CustomerFullName,
                     EmailAddress = vm.EmailAddress,
@@ -62,7 +60,8 @@ namespace FUMiniHotelManagementWPF.ViewModels
                     Password = vm.Password
                 };
                 _customerService.Add(newCustomer);
-                Customers.Add(newCustomer);
+                ReloadCustomers();
+                MessageBox.Show("Thêm khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -82,7 +81,8 @@ namespace FUMiniHotelManagementWPF.ViewModels
                 SelectedCustomer.CustomerStatus = vm.Status;
                 SelectedCustomer.Password = vm.Password;
                 _customerService.Update(SelectedCustomer);
-                Refresh();
+                ReloadCustomers();
+                MessageBox.Show("Cập nhật khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -93,15 +93,9 @@ namespace FUMiniHotelManagementWPF.ViewModels
             if (result == MessageBoxResult.Yes)
             {
                 _customerService.Remove(SelectedCustomer);
-                Customers.Remove(SelectedCustomer);
+                ReloadCustomers();
+                MessageBox.Show("Xóa khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-        }
-
-        private void Refresh()
-        {
-            Customers.Clear();
-            foreach (var c in _customerService.GetAll())
-                Customers.Add(c);
         }
 
         private void Search()
@@ -115,6 +109,13 @@ namespace FUMiniHotelManagementWPF.ViewModels
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void ReloadCustomers()
+        {
+            Customers.Clear();
+            foreach (var c in _customerService.GetAll())
+                Customers.Add(c);
         }
     }
 }

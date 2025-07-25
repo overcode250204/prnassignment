@@ -52,5 +52,10 @@ namespace BLL.Services
                                || (c.Telephone != null && c.Telephone.ToLower().Contains(keyword)))
                       .ToList();
         }
+
+        public Customer GetCustomerById(int id)
+        {
+            return _customerRepository.GetCustomerById(id);
+        }
     }
 }

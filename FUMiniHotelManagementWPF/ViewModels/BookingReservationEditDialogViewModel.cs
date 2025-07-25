@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace FUMiniHotelManagementWPF.ViewModels
 {
-    public class BookingReservationEditDialogViewModel
+    public class BookingReservationEditDialogViewModel : INotifyPropertyChanged
     {
         public int CustomerId { get; set; }
         public DateTime? BookingDate { get; set; }
@@ -23,26 +23,47 @@ namespace FUMiniHotelManagementWPF.ViewModels
         public ICommand SaveCommand { get; }
         public event Action<bool> RequestClose;
 
+        private readonly bool _isCreate;
+        public List<Customer> Customers { get; set; }
+        private Customer _selectedCustomer;
+        public Customer SelectedCustomer
+        {
+            get => _selectedCustomer;
+            set
+            {
+                _selectedCustomer = value;
+                CustomerId = value?.CustomerId ?? 0;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CustomerId));
+            }
+        }
+
         public BookingReservationEditDialogViewModel(BookingReservation reservation = null, BookingDetail detail = null)
         {
+            Customers = App._manageCustomerServiceSingleton.GetAll();
             if (reservation != null)
             {
                 CustomerId = reservation.CustomerId;
+                SelectedCustomer = Customers.FirstOrDefault(c => c.CustomerId == CustomerId);
                 BookingDate = reservation.BookingDate.HasValue ? reservation.BookingDate.Value.ToDateTime(TimeOnly.MinValue) : (DateTime?)null;
                 TotalPrice = reservation.TotalPrice;
                 BookingStatus = reservation.BookingStatus;
+                _isCreate = false;
             }
-
+            else
+            {
+                BookingDate = DateTime.Today;
+                _isCreate = true;
+            }
             SaveCommand = new RelayCommand(_ => Save());
         }
 
         private void Save()
         {
             ErrorMessage = string.Empty;
-            if (CustomerId <= 0)
-                ErrorMessage = "Khách hàng không hợp lệ.";
-            else if (BookingDate == null)
-                ErrorMessage = "Ngày đặt không hợp lệ.";
+            if (SelectedCustomer == null)
+                ErrorMessage = "Bạn phải chọn khách hàng.";
+
             else if (TotalPrice == null || TotalPrice < 0)
                 ErrorMessage = "Tổng tiền không hợp lệ.";
             else if (BookingStatus == null || BookingStatus < 0)

@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace FUMiniHotelManagementWPF.ViewModels
 {
-    public class RoomEditDialogViewModel
+    public class RoomEditDialogViewModel : INotifyPropertyChanged
     {
         public string RoomNumber { get; set; }
         public int RoomTypeId { get; set; }
@@ -55,6 +55,10 @@ namespace FUMiniHotelManagementWPF.ViewModels
             if (string.IsNullOrWhiteSpace(RoomNumber))
             {
                 ErrorMessage = "Số phòng không được để trống.";
+            }
+            else if (App._roomInformationRepositorySingleton.GetAll().Any(r => r.RoomNumber == RoomNumber))
+            {
+                ErrorMessage = "Mã phòng đã tồn tại.";
             }
             else if (SelectedRoomType == null)
             {

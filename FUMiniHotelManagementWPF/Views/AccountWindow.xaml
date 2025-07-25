@@ -1,0 +1,37 @@
+﻿<Window x:Class="FUMiniHotelManagementWPF.Views.AccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FUMiniHotelManagementWPF.Views"
+        mc:Ignorable="d"
+        Title="Tài Khoản" Height="450" Width="800">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <Label Content="Họ tên:"/>
+            <TextBox Text="{Binding CustomerFullName, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <Label Content="Email:"/>
+            <TextBox Text="{Binding EmailAddress, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <Label Content="Số điện thoại:"/>
+            <TextBox Text="{Binding Telephone, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <Label Content="Ngày sinh:"/>
+            <DatePicker SelectedDate="{Binding DateOfBirth, Mode=TwoWay}"/>
+
+            <Label Content="Mật khẩu:"/>
+            <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,10,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Lưu" Width="80" Margin="0,0,10,0" IsDefault="True" Command="{Binding SaveCommand}"/>
+            <Button Content="Hủy" Width="80" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

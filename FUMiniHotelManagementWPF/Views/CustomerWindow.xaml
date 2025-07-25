@@ -7,8 +7,11 @@
         mc:Ignorable="d"
         Title="CustomerWindow" Height="450" Width="800">
     <Grid>
-        <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock x:Name="WelcomeText" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Grid>
+            <Button x:Name="Account" Content="Tài khoản" Width="200" Height="40" Margin="0 30 0 0" Click="Account_Click"  />
+            <Button Name="History" Content="Lịch sử đặt phòng" Width="200" Height="40" Margin="0 10 0 0" Click="History_Click"  />
+            <Button Content="Đăng xuất" Width="200" Height="40" Margin="0 30 0 0" Click="Logout_Click"/>
+        </StackPanel>
     </Grid>
 </Window>

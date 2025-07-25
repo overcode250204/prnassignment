@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FUMiniHotelManagementWPF.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,6 +40,21 @@ namespace FUMiniHotelManagementWPF.Views
         {
             var bookingWindow = new AdminBookingManagement();
             bookingWindow.ShowDialog();
+        }
+
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            var loginWindow = new LoginWindow();
+            loginWindow.DataContext = new LoginViewModel(App._authServiceSingleton);
+            loginWindow.Show();
+            this.Close();
+        }
+
+
+        private void Statistics_Click(object sender, RoutedEventArgs e)
+        {
+            var statsWindow = new ReportWindow();
+            statsWindow.ShowDialog();
         }
     }
 }
